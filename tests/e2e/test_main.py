@@ -53,3 +53,30 @@ async def test_it_should_return_400_when_registering_part_with_invalid_payload(
 
     assert response.status_code == 400
     assert response.json()['errors'] == expected_error
+
+
+async def test_it_should_return_part_details(async_http_client: AsyncClient):
+    part_payload = {
+        'name': 'Stepper motor',
+        'quantity': 100,
+        'description': 'NEMA 17 stepper motor',
+    }
+
+    response = await async_http_client.post('/v1/parts/', json=part_payload)
+
+    part_number = response.json()['part_number']
+    expected_result = await part_details(part_number)
+
+    response = await async_http_client.get(f'/v1/parts/{part_number}')
+
+    assert response.status_code == 200
+    assert response.json() == expected_result.dict()
+
+
+async def test_it_should_return_404_when_getting_part_details_with_invalid_part_number(
+    async_http_client: AsyncClient,
+):
+    response = await async_http_client.get(f'/v1/parts/{999}')
+
+    assert response.status_code == 404
+    assert response.json() == {'detail': 'Part number not found'}

@@ -8,4 +8,5 @@ async def register_part(part: Part, repository: PartsRepository = PartsRepositor
 
 async def part_details(part_number: int, repository: PartsRepository = PartsRepository()) -> Part:
     part = await repository.get(part_number)
-    return Part(name=part[1], quantity=part[2], description=part[3])
+    if part:
+        return Part(name=part[1], quantity=part[2], description=part[3])
