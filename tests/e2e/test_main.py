@@ -87,3 +87,10 @@ async def test_it_should_return_all_parts_registered(async_http_client: AsyncCli
 
     assert response.status_code == 200
     assert response.json() == parts_to_register
+
+
+async def test_it_should_return_empty_list_when_no_parts_registered(async_http_client: AsyncClient):
+    response = await async_http_client.get('/v1/parts/')
+
+    assert response.status_code == 200
+    assert response.json() == []
