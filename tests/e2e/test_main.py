@@ -76,9 +76,21 @@ async def test_it_should_return_404_when_getting_part_details_with_invalid_part_
 
 async def test_it_should_return_all_parts_registered(async_http_client: AsyncClient):
     parts_to_register = [
-        {'name': 'Stepper motor', 'quantity': 100, 'description': 'NEMA 17 stepper motor'},
-        {'name': 'Encoder disc for Speed Sensor', 'quantity': 50, 'description': '12mm encoder disc'},
-        {'name': 'Encoder HC 020K Double Speed Sensor', 'quantity': 999, 'description': 'HC 020K encoder'},
+        {
+            'name': 'Stepper motor',
+            'quantity': 100,
+            'description': 'NEMA 17 stepper motor',
+        },
+        {
+            'name': 'Encoder disc for Speed Sensor',
+            'quantity': 50,
+            'description': '12mm encoder disc',
+        },
+        {
+            'name': 'Encoder HC 020K Double Speed Sensor',
+            'quantity': 999,
+            'description': 'HC 020K encoder',
+        },
     ]
     for part_data in parts_to_register:
         await async_http_client.post('/v1/parts/', json=part_data)
@@ -89,7 +101,9 @@ async def test_it_should_return_all_parts_registered(async_http_client: AsyncCli
     assert response.json() == parts_to_register
 
 
-async def test_it_should_return_empty_list_when_no_parts_registered(async_http_client: AsyncClient):
+async def test_it_should_return_empty_list_when_no_parts_registered(
+    async_http_client: AsyncClient,
+):
     response = await async_http_client.get('/v1/parts/')
 
     assert response.status_code == 200
