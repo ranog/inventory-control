@@ -22,3 +22,8 @@ class PartsRepository:
         cursor = self.collection.cursor()
         cursor.execute('SELECT * FROM parts WHERE id = ?', (part_number,))
         return cursor.fetchone()
+
+    async def list(self) -> list:
+        cursor = self.collection.cursor()
+        cursor.execute('SELECT * FROM parts')
+        return cursor.fetchall()

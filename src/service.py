@@ -10,3 +10,8 @@ async def part_details(part_number: int, repository: PartsRepository = PartsRepo
     part = await repository.get(part_number)
     if part:
         return Part(name=part[1], quantity=part[2], description=part[3])
+
+
+async def list_parts(repository: PartsRepository = PartsRepository()) -> list:
+    parts = await repository.list()
+    return [{'name': part[1], 'quantity': part[2], 'description': part[3]} for part in parts]
