@@ -1,9 +1,8 @@
-from src.service import list_parts, part_details, register_part
 from src.model import Part
+from src.service import list_parts, part_details, register_part
 
 
-async def test_it_should_register_a_part_in_the_database():
-    part = Part(name='Stepper motor', quantity=100, description='NEMA 17 stepper motor')
+async def test_it_should_register_a_part_in_the_database(part):
     part_number = await register_part(part)
 
     expected_result = await part_details(part_number['part_number'])
@@ -12,17 +11,14 @@ async def test_it_should_register_a_part_in_the_database():
 
 
 async def test_it_should_return_all_parts_registered_in_the_database():
-    part_1 = Part(name='Stepper motor', quantity=100, description='NEMA 17 stepper motor')
-    part_2 = Part(name='Encoder disc for Speed Sensor', quantity=50, description='12mm encoder disc')
-    part_3 = Part(name='Encoder HC 020K Double Speed Sensor', quantity=999, description='HC 020K encoder')
-    await register_part(part_1)
-    await register_part(part_2)
-    await register_part(part_3)
-
-    expected_result = [
+    parts_to_register = [
         {'name': 'Stepper motor', 'quantity': 100, 'description': 'NEMA 17 stepper motor'},
         {'name': 'Encoder disc for Speed Sensor', 'quantity': 50, 'description': '12mm encoder disc'},
         {'name': 'Encoder HC 020K Double Speed Sensor', 'quantity': 999, 'description': 'HC 020K encoder'},
     ]
+    for part_data in parts_to_register:
+        await register_part(Part(**part_data))
 
-    assert expected_result == await list_parts()
+    database_parts = await list_parts()
+
+    assert parts_to_register == database_parts

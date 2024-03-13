@@ -1,13 +1,5 @@
 from httpx import AsyncClient
-import pytest
 from src.service import part_details
-from src.main import app
-
-
-@pytest.fixture
-async def async_http_client():
-    async with AsyncClient(app=app, base_url='http://test') as async_client:
-        yield async_client
 
 
 async def test_it_should_ping_successfully(async_http_client: AsyncClient):
