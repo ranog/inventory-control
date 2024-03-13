@@ -21,5 +21,4 @@ class PartsRepository:
     async def get(self, part_number: int) -> Part:
         cursor = self.collection.cursor()
         cursor.execute('SELECT * FROM parts WHERE id = ?', (part_number,))
-        part = cursor.fetchone()
-        return Part(id=part[0], name=part[1], quantity=part[2], description=part[3])
+        return cursor.fetchone()

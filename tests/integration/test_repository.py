@@ -9,6 +9,4 @@ async def test_it_should_persist_in_the_repository():
 
     created_part = await part_repository.get(part_number)
 
-    assert created_part.name == 'Stepper motor'
-    assert created_part.quantity == 100
-    assert created_part.description == 'NEMA 17 stepper motor'
+    assert created_part == (part_number, part.name, part.quantity, part.description)

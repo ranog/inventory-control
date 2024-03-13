@@ -1,9 +1,19 @@
 from fastapi import FastAPI
-from src.service import register_part
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 
+from src.service import register_part
 from src.model import Part
 
 app = FastAPI()
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request, error):
+    return JSONResponse(
+        status_code=400,
+        content={'detail': 'Validation error', 'errors': error.errors()},
+    )
 
 
 @app.get('/v1/ping/', include_in_schema=False)
