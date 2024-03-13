@@ -27,7 +27,7 @@ async def create_part(part: Part):
 
 
 @app.get('/v1/parts/{part_number}')
-async def get_part(part_number: int):
+async def search_for_part(part_number: int):
     part_data = await part_details(part_number)
     if part_data:
         return part_data
