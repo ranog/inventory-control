@@ -9,21 +9,19 @@ class PartsRepository:
             'CREATE TABLE IF NOT EXISTS parts (id INTEGER PRIMARY KEY, name TEXT, quantity INTEGER, description TEXT)'
         )
 
+    def _execute(self, query: str, parameters: tuple = ()) -> list:
+        return self.collection.cursor().execute(query, parameters)
+
     async def create(self, part: Part) -> int:
-        cursor = self.collection.cursor()
-        cursor.execute(
-            'INSERT INTO parts (name, quantity, description) VALUES (?, ?, ?)',
-            (part.name, part.quantity, part.description),
+        cursor = self._execute(
+            query='INSERT INTO parts (name, quantity, description) VALUES (?, ?, ?)',
+            parameters=(part.name, part.quantity, part.description),
         )
         self.collection.commit()
         return cursor.lastrowid
 
     async def get(self, part_number: int) -> Part:
-        cursor = self.collection.cursor()
-        cursor.execute('SELECT * FROM parts WHERE id = ?', (part_number,))
-        return cursor.fetchone()
+        return self._execute(query='SELECT * FROM parts WHERE id = ?', parameters=(part_number,)).fetchone()
 
     async def list(self) -> list:
-        cursor = self.collection.cursor()
-        cursor.execute('SELECT * FROM parts')
-        return cursor.fetchall()
+        return self._execute('SELECT * FROM parts').fetchall()
