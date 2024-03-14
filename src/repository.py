@@ -28,3 +28,10 @@ class PartsRepository:
 
     async def list(self) -> list:
         return self._execute('SELECT * FROM parts').fetchall()
+
+    async def update(self, part_number: int, part: Part) -> None:
+        self._execute(
+            query='UPDATE parts SET name = ?, quantity = ?, description = ? WHERE id = ?',
+            parameters=(part.name, part.quantity, part.description, part_number),
+        )
+        self.collection.commit()
