@@ -2,7 +2,12 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
-from src.service import list_parts, part_details, register_part
+from src.service import (
+    list_parts,
+    part_details,
+    register_part,
+    update_part,
+)
 from src.model import Part
 
 app = FastAPI()
@@ -37,3 +42,8 @@ async def search_part_by_number(part_number: int):
 @app.get('/v1/parts/')
 async def find_all_parts():
     return await list_parts()
+
+
+@app.put('/v1/parts/{part_number}')
+async def update_part_registration(part_number: int, part: Part):
+    return await update_part(part_number=part_number, part=part)

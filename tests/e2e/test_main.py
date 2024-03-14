@@ -110,3 +110,27 @@ async def test_it_should_return_empty_list_when_no_parts_registered(
 
     assert response.status_code == 200
     assert response.json() == []
+
+
+async def test_it_should_update_part(async_http_client: AsyncClient):
+    part_payload = {
+        'name': 'Stepper motor',
+        'quantity': 100,
+        'description': 'NEMA 17 stepper motor',
+    }
+    response = await async_http_client.post('/v1/parts/', json=part_payload)
+    part_number = response.json()['part_number']
+    updated_part_payload = {
+        'name': 'DC motor',
+        'quantity': 50,
+        'description': '12V DC motor',
+    }
+
+    response = await async_http_client.put(f'/v1/parts/{part_number}', json=updated_part_payload)
+
+    expected_result = await part_details(part_number)
+
+    assert response.status_code == 200
+    assert updated_part_payload['name'] == expected_result.name
+    assert updated_part_payload['quantity'] == expected_result.quantity
+    assert updated_part_payload['description'] == expected_result.description

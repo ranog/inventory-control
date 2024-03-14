@@ -1,5 +1,10 @@
 from src.model import Part
-from src.service import list_parts, part_details, register_part
+from src.service import (
+    list_parts,
+    part_details,
+    register_part,
+    update_part,
+)
 
 
 async def test_it_should_register_a_part_in_the_database(part):
@@ -48,3 +53,13 @@ async def test_created_at_field_should_not_be_empty_when_the_part_is_registered(
     created_part = await part_details(part_number['part_number'])
 
     assert created_part.created_at is not None
+
+
+async def test_updated_at_field_should_not_be_empty_when_the_part_is_updated(part):
+    part_number = await register_part(part)
+    updated_part = Part(name='DC motor', quantity=50, description='12V DC motor')
+
+    await update_part(part_number=part_number['part_number'], part=updated_part)
+
+    part = await part_details(part_number['part_number'])
+    assert part.updated_at is not None

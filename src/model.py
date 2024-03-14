@@ -6,3 +6,4 @@ class Part(BaseModel):
     quantity: int
     description: str
     created_at: str = None
+    updated_at: str = None

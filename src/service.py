@@ -9,9 +9,35 @@ async def register_part(part: Part, repository: PartsRepository = PartsRepositor
 async def part_details(part_number: int, repository: PartsRepository = PartsRepository()) -> Part:
     part = await repository.get(part_number)
     if part:
-        return Part(name=part[1], quantity=part[2], description=part[3], created_at=part[4])
+        part_attributes = (
+            'id',
+            'name',
+            'quantity',
+            'description',
+            'created_at',
+            'updated_at',
+        )
+        part_data = dict(zip(part_attributes, part))
+        return Part(**part_data)
 
 
 async def list_parts(repository: PartsRepository = PartsRepository()) -> list:
     parts = await repository.list()
-    return [{'name': part[1], 'quantity': part[2], 'description': part[3], 'created_at': part[4]} for part in parts]
+
+    parts_data = []
+    for part in parts:
+        part_attributes = (
+            'id',
+            'name',
+            'quantity',
+            'description',
+            'created_at',
+            'updated_at',
+        )
+        parts_data.append(dict(zip(part_attributes, part)))
+
+    return parts_data
+
+
+async def update_part(part_number: int, part: Part, repository: PartsRepository = PartsRepository()) -> None:
+    await repository.update(part_number=part_number, part=part)
