@@ -1,5 +1,5 @@
 # Robotic parts inventory
-CRUD básico para o cadastro de peças.
+CRUD básico para cadastro de peças.
 
 ## Instalar as dependências do projeto
 
@@ -30,3 +30,43 @@ https://github.com/pyenv/pyenv#installation
 ## Arquivo .env
 
 Faça um cópia do arquivo .env.local removendo o sufixo .local
+
+## Criar peça:
+```
+curl --request POST \
+  --url http://127.0.0.1:8080/v1/parts/ \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "name": "Stepper motor",
+  "quantity": 100,
+	"description": "NEMA 17 stepper motor"
+}'
+```
+
+## Ler uma peça por vez:
+```
+curl --request GET \
+  --url http://127.0.0.1:8080/v1/parts/1
+```
+
+## Ler todas as peças:
+```
+curl --request GET \
+  --url http://127.0.0.1:8080/v1/parts/
+```
+
+## Atualizar peça:
+```
+curl --request PUT \
+  --url http://127.0.0.1:8080/v1/parts/1 \
+  --header 'Content-Type: application/json' \
+  --data '{
+	"name": 'DC motor'
+}'
+```
+
+## Deletar peça:
+```
+curl --request DELETE \
+  --url http://127.0.0.1:8080/v1/parts/1
+```
