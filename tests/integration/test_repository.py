@@ -7,4 +7,4 @@ async def test_it_should_persist_in_the_repository(part):
 
     created_part = await part_repository.get(part_number)
 
-    assert created_part == (part_number, part.name, part.quantity, part.description)
+    assert created_part == (part_number, part.name, part.quantity, part.description, part.created_at)

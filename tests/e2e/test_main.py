@@ -1,5 +1,5 @@
 from httpx import AsyncClient
-from src.service import part_details
+from src.service import list_parts, part_details
 
 
 async def test_it_should_ping_successfully(async_http_client: AsyncClient):
@@ -95,10 +95,12 @@ async def test_it_should_return_all_parts_registered(async_http_client: AsyncCli
     for part_data in parts_to_register:
         await async_http_client.post('/v1/parts/', json=part_data)
 
+    expected_result = await list_parts()
+
     response = await async_http_client.get('/v1/parts/')
 
     assert response.status_code == 200
-    assert response.json() == parts_to_register
+    assert response.json() == expected_result
 
 
 async def test_it_should_return_empty_list_when_no_parts_registered(

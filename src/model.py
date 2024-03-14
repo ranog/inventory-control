@@ -5,3 +5,4 @@ class Part(BaseModel):
     name: str
     quantity: int
     description: str
+    created_at: str = None

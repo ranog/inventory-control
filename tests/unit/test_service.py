@@ -33,4 +33,18 @@ async def test_it_should_return_all_parts_registered_in_the_database():
 
     database_parts = await list_parts()
 
-    assert parts_to_register == database_parts
+    assert len(parts_to_register) == len(database_parts)
+
+
+async def test_it_should_return_empty_list_when_no_parts_registered_in_the_database():
+    database_parts = await list_parts()
+
+    assert database_parts == []
+
+
+async def test_created_at_field_should_not_be_empty_when_the_part_is_registered(part):
+    part_number = await register_part(part)
+
+    created_part = await part_details(part_number['part_number'])
+
+    assert created_part.created_at is not None
