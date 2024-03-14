@@ -1,3 +1,4 @@
+from src.model import Part
 from src.repository import PartsRepository
 
 
@@ -17,14 +18,11 @@ async def test_it_should_persist_in_the_repository(part):
     )
 
 
-async def test_it_should_update_part_data_in_the_database(part):
+async def test_it_should_update_part_data_in_the_database(part: Part, updated_part_payload: dict):
     part_repository = PartsRepository()
     part_number = await part_repository.create(part)
 
-    await part_repository.update(
-        part_number=part_number,
-        data_to_update={'name': 'DC motor', 'quantity': 50, 'description': '12V DC motor'},
-    )
+    await part_repository.update(part_number=part_number, data_to_update=updated_part_payload)
 
     assert await part_repository.get(part_number) != part
 

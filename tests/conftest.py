@@ -23,3 +23,42 @@ def clear_repository():
 @pytest.fixture
 def part():
     return Part(name='Stepper motor', quantity=100, description='NEMA 17 stepper motor')
+
+
+@pytest.fixture
+def part_payload():
+    return {
+        'name': 'Stepper motor',
+        'quantity': 100,
+        'description': 'NEMA 17 stepper motor',
+    }
+
+
+@pytest.fixture
+def updated_part_payload():
+    return {
+        'name': 'DC motor',
+        'quantity': 50,
+        'description': '12V DC motor',
+    }
+
+
+@pytest.fixture
+def parts_to_register():
+    return [
+        {
+            'name': 'Stepper motor',
+            'quantity': 100,
+            'description': 'NEMA 17 stepper motor',
+        },
+        {
+            'name': 'Encoder disc for Speed Sensor',
+            'quantity': 50,
+            'description': '12mm encoder disc',
+        },
+        {
+            'name': 'Encoder HC 020K Double Speed Sensor',
+            'quantity': 999,
+            'description': 'HC 020K encoder',
+        },
+    ]

@@ -9,13 +9,7 @@ async def test_it_should_ping_successfully(async_http_client: AsyncClient):
     assert response.json() == 'pong'
 
 
-async def test_it_should_register_part(async_http_client: AsyncClient):
-    part_payload = {
-        'name': 'Stepper motor',
-        'quantity': 100,
-        'description': 'NEMA 17 stepper motor',
-    }
-
+async def test_it_should_register_part(async_http_client: AsyncClient, part_payload: dict):
     response = await async_http_client.post('/v1/parts/', json=part_payload)
 
     expected_result = await part_details(response.json()['part_number'])
@@ -28,11 +22,9 @@ async def test_it_should_register_part(async_http_client: AsyncClient):
 
 async def test_it_should_return_400_when_registering_part_with_invalid_payload(
     async_http_client: AsyncClient,
+    part_payload: dict,
 ):
-    part_payload = {
-        'name': 'Stepper motor',
-        'quantity': 100,
-    }
+    part_payload.pop('description')
     expected_error = [
         {
             'loc': ['body', 'description'],
@@ -47,13 +39,7 @@ async def test_it_should_return_400_when_registering_part_with_invalid_payload(
     assert response.json()['errors'] == expected_error
 
 
-async def test_it_should_return_part_details(async_http_client: AsyncClient):
-    part_payload = {
-        'name': 'Stepper motor',
-        'quantity': 100,
-        'description': 'NEMA 17 stepper motor',
-    }
-
+async def test_it_should_return_part_details(async_http_client: AsyncClient, part_payload: dict):
     response = await async_http_client.post('/v1/parts/', json=part_payload)
 
     part_number = response.json()['part_number']
@@ -74,24 +60,7 @@ async def test_it_should_return_404_when_getting_part_details_with_invalid_part_
     assert response.json() == {'detail': 'Part number not found'}
 
 
-async def test_it_should_return_all_parts_registered(async_http_client: AsyncClient):
-    parts_to_register = [
-        {
-            'name': 'Stepper motor',
-            'quantity': 100,
-            'description': 'NEMA 17 stepper motor',
-        },
-        {
-            'name': 'Encoder disc for Speed Sensor',
-            'quantity': 50,
-            'description': '12mm encoder disc',
-        },
-        {
-            'name': 'Encoder HC 020K Double Speed Sensor',
-            'quantity': 999,
-            'description': 'HC 020K encoder',
-        },
-    ]
+async def test_it_should_return_all_parts_registered(async_http_client: AsyncClient, parts_to_register: list[dict]):
     for part_data in parts_to_register:
         await async_http_client.post('/v1/parts/', json=part_data)
 
@@ -112,19 +81,9 @@ async def test_it_should_return_empty_list_when_no_parts_registered(
     assert response.json() == []
 
 
-async def test_it_should_update_part(async_http_client: AsyncClient):
-    part_payload = {
-        'name': 'Stepper motor',
-        'quantity': 100,
-        'description': 'NEMA 17 stepper motor',
-    }
+async def test_it_should_update_part(async_http_client: AsyncClient, part_payload: dict, updated_part_payload: dict):
     response = await async_http_client.post('/v1/parts/', json=part_payload)
     part_number = response.json()['part_number']
-    updated_part_payload = {
-        'name': 'DC motor',
-        'quantity': 50,
-        'description': '12V DC motor',
-    }
 
     response = await async_http_client.put(f'/v1/parts/{part_number}', json=updated_part_payload)
 
@@ -136,12 +95,7 @@ async def test_it_should_update_part(async_http_client: AsyncClient):
     assert updated_part_payload['description'] == expected_result.description
 
 
-async def test_it_should_update_part_with_partial_data(async_http_client: AsyncClient):
-    part_payload = {
-        'name': 'Stepper motor',
-        'quantity': 100,
-        'description': 'NEMA 17 stepper motor',
-    }
+async def test_it_should_update_part_with_partial_data(async_http_client: AsyncClient, part_payload: dict):
     response = await async_http_client.post('/v1/parts/', json=part_payload)
     part_number = response.json()['part_number']
     updated_part_payload = {'name': 'DC motor'}

@@ -39,5 +39,9 @@ async def list_parts(repository: PartsRepository = PartsRepository()) -> list:
     return parts_data
 
 
-async def update_part(part_number: int, data_to_update: dict, repository: PartsRepository = PartsRepository()) -> None:
+async def update_part(
+    part_number: int,
+    data_to_update: dict,
+    repository: PartsRepository = PartsRepository(),
+) -> None:
     await repository.update(part_number=part_number, data_to_update=data_to_update)
