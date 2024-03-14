@@ -76,3 +76,12 @@ async def test_it_should_only_update_the_description_of_the_part(part):
     assert quantity == part.quantity
     assert created_at == part.created_at
     assert updated_at != part.updated_at
+
+
+async def test_it_should_delete_the_record_from_the_database(part: Part):
+    part_repository = PartsRepository()
+    part_number = await part_repository.create(part)
+
+    await part_repository.delete(part_number)
+
+    assert await part_repository.get(part_number) is None

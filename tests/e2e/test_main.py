@@ -107,3 +107,22 @@ async def test_it_should_update_part_with_partial_data(async_http_client: AsyncC
     assert updated_part_payload['name'] == expected_result.name
     assert part_payload['quantity'] == expected_result.quantity
     assert part_payload['description'] == expected_result.description
+
+
+async def test_it_should_delete_the_record_from_the_database(async_http_client: AsyncClient, part_payload: dict):
+    response = await async_http_client.post('/v1/parts/', json=part_payload)
+    part_number = response.json()['part_number']
+
+    response = await async_http_client.delete(f'/v1/parts/{part_number}')
+
+    assert response.status_code == 200
+    assert await part_details(part_number) is None
+
+
+async def test_it_should_return_404_when_deleting_part_with_invalid_part_number(
+    async_http_client: AsyncClient,
+):
+    response = await async_http_client.delete(f'/v1/parts/{999}')
+
+    assert response.status_code == 404
+    assert response.json() == {'detail': 'Part number not found'}

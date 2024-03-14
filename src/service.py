@@ -45,3 +45,7 @@ async def update_part(
     repository: PartsRepository = PartsRepository(),
 ) -> None:
     await repository.update(part_number=part_number, data_to_update=data_to_update)
+
+
+async def delete_part_record(part_number: int, repository: PartsRepository = PartsRepository()) -> None:
+    await repository.delete(part_number)

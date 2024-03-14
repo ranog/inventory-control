@@ -63,3 +63,7 @@ class PartsRepository:
 
         self._execute(query=update_query, parameters=tuple(update_parameters))
         self.collection.commit()
+
+    async def delete(self, part_number: int) -> None:
+        self._execute(query='DELETE FROM parts WHERE id = ?', parameters=(part_number,))
+        self.collection.commit()
