@@ -134,3 +134,22 @@ async def test_it_should_update_part(async_http_client: AsyncClient):
     assert updated_part_payload['name'] == expected_result.name
     assert updated_part_payload['quantity'] == expected_result.quantity
     assert updated_part_payload['description'] == expected_result.description
+
+
+async def test_it_should_update_part_with_partial_data(async_http_client: AsyncClient):
+    part_payload = {
+        'name': 'Stepper motor',
+        'quantity': 100,
+        'description': 'NEMA 17 stepper motor',
+    }
+    response = await async_http_client.post('/v1/parts/', json=part_payload)
+    part_number = response.json()['part_number']
+    updated_part_payload = {'name': 'DC motor'}
+
+    await async_http_client.put(f'/v1/parts/{part_number}', json=updated_part_payload)
+
+    expected_result = await part_details(part_number)
+
+    assert updated_part_payload['name'] == expected_result.name
+    assert part_payload['quantity'] == expected_result.quantity
+    assert part_payload['description'] == expected_result.description

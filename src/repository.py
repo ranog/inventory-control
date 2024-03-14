@@ -16,7 +16,7 @@ class PartsRepository:
 
     def _set_date(self, part: Part) -> Part:
         part.created_at = str(datetime.now(timezone.utc))
-        part.updated_at = str(datetime.now(timezone.utc))
+        part.updated_at = part.created_at
 
     async def create(self, part: Part) -> int:
         self._set_date(part)
@@ -39,16 +39,27 @@ class PartsRepository:
     async def list(self) -> list:
         return self._execute('SELECT * FROM parts').fetchall()
 
-    async def update(self, part_number: int, part: Part) -> None:
-        part.updated_at = str(datetime.now(timezone.utc))
-        self._execute(
-            query='UPDATE parts SET name = ?, quantity = ?, description = ?, updated_at = ? WHERE id = ?',
-            parameters=(
-                part.name,
-                part.quantity,
-                part.description,
-                part.updated_at,
-                part_number,
-            ),
-        )
+    async def update(self, part_number: int, data_to_update: dict) -> None:
+        update_queries = []
+        update_parameters = []
+
+        if 'name' in data_to_update:
+            update_queries.append('name = ?')
+            update_parameters.append(data_to_update['name'])
+
+        if 'quantity' in data_to_update:
+            update_queries.append('quantity = ?')
+            update_parameters.append(data_to_update['quantity'])
+
+        if 'description' in data_to_update:
+            update_queries.append('description = ?')
+            update_parameters.append(data_to_update['description'])
+
+        update_queries.append('updated_at = ?')
+        update_parameters.append(str(datetime.now(timezone.utc)))
+
+        update_query = 'UPDATE parts SET {} WHERE id = ?'.format(', '.join(update_queries))
+        update_parameters.append(part_number)
+
+        self._execute(query=update_query, parameters=tuple(update_parameters))
         self.collection.commit()

@@ -45,5 +45,5 @@ async def find_all_parts():
 
 
 @app.put('/v1/parts/{part_number}')
-async def update_part_registration(part_number: int, part: Part):
-    return await update_part(part_number=part_number, part=part)
+async def update_part_registration(part_number: int, data_to_update: dict):
+    return await update_part(part_number=part_number, data_to_update=data_to_update)
