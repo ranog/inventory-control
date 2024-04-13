@@ -1,5 +1,5 @@
-from src.model import Part
-from src.repository import PartsRepository
+from src.v1.model import Part
+from src.v1.repository import PartsRepository
 
 
 async def test_it_should_persist_in_the_repository(part):

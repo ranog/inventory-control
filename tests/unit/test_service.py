@@ -1,6 +1,6 @@
 import random
-from src.model import Part
-from src.service import (
+from src.v1.model import Part
+from src.v1.service import (
     delete_part_record,
     list_parts,
     part_details,

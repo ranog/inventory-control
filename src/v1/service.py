@@ -1,5 +1,5 @@
-from src.repository import PartsRepository
-from src.model import Part
+from src.v1.model import Part
+from src.v1.repository import PartsRepository
 
 
 async def register_part(part: Part, repository: PartsRepository = PartsRepository()) -> int:

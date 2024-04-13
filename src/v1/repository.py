@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 import sqlite3
-from src.model import Part
+from src.v1.model import Part
 
 
 class PartsRepository:

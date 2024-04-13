@@ -1,5 +1,5 @@
 from httpx import AsyncClient
-from src.service import list_parts, part_details
+from src.v1.service import list_parts, part_details
 
 
 async def test_it_should_ping_successfully(async_http_client: AsyncClient):

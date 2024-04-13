@@ -2,14 +2,14 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
-from src.service import (
+from src.v1.service import (
     delete_part_record,
     list_parts,
     part_details,
     register_part,
     update_part,
 )
-from src.model import Part
+from src.v1.model import Part
 
 app = FastAPI()
 
