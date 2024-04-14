@@ -3,7 +3,7 @@ from datetime import date
 from typing import Optional
 
 
-@dataclass
+@dataclass(frozen=True)
 class OrderLine:
     orderid: str
     sku: str  # stock-keeping unit
@@ -16,11 +16,11 @@ class Batch:
         self.sku = sku
         self.eta = eta
         self._purchased_quantity = qty
-        self._allocations = []
+        self._allocations = set()
 
     def allocate(self, line: OrderLine):
         if self.can_allocate(line):
-            self._allocations.append(line)
+            self._allocations.add(line)
 
     def deallocate(self, line: OrderLine):
         if line in self._allocations:

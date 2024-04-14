@@ -47,3 +47,13 @@ def test_can_only_deallocate_allocated_lines():
     batch.deallocate(line)
 
     assert batch.available_quantity == 20
+
+
+def test_allocation_is_idempotent():
+    batch = Batch(ref='batch-001', sku='STEPPER-MOTOR', qty=20, eta=date.today())
+    line = OrderLine(orderid='order-ref', sku='STEPPER-MOTOR', qty=2)
+
+    batch.allocate(line)
+    batch.allocate(line)
+
+    assert batch.available_quantity == 18
