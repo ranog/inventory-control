@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.3.0"
+    rev: "v0.3.7"
     hooks:
       - id: ruff
         args: [ --fix, --exit-non-zero-on-fix ]
@@ -9,11 +9,8 @@ repos:
     hooks:
     - id: blue
       args: [ --line-length=120 ]
-  - repo: local
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: "v3.22.0"
     hooks:
-    - id: commit-prefix
-      name: validate commit pre fix
-      language: pygrep
-      entry: '^(?!fix: |feat: |ci: |docs: |refactor: |test: |infra: |chore: )[a-zA-Z0-9_.]'
-      args: [--multiline]
-      stages: [commit-msg]
+      - id: commitizen
+        stages: [commit-msg]
