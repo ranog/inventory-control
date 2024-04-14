@@ -38,3 +38,12 @@ def test_cannot_allocate_if_skus_do_not_match():
     line = OrderLine(orderid='order-ref', sku='MICRO-SERVO-9G-SG90', qty=2)
 
     assert not batch.can_allocate(line)
+
+
+def test_can_only_deallocate_allocated_lines():
+    batch = Batch(ref='batch-001', sku='STEPPER-MOTOR', qty=20, eta=date.today())
+    line = OrderLine(orderid='order-ref', sku='STEPPER-MOTOR', qty=2)
+
+    batch.deallocate(line)
+
+    assert batch.available_quantity == 20
