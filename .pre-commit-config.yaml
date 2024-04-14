@@ -9,3 +9,11 @@ repos:
     hooks:
     - id: blue
       args: [ --line-length=120 ]
+  - repo: local
+    hooks:
+    - id: commit-prefix
+      name: validate commit pre fix
+      language: pygrep
+      entry: '^(?!fix: |feat: |ci: |docs: |refactor: |test: |infra: |chore: )[a-zA-Z0-9_.]'
+      args: [--multiline]
+      stages: [commit-msg]
