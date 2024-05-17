@@ -13,7 +13,7 @@ https://github.com/pyenv/pyenv#installation
 `pyenv install 3.11.3`
 
 ### configurar versão 3.11.3 na sessão do terminal aberto
-`pyenv shell 3.11.3`
+`pyenv local 3.11.3`
 
 ### instalar depêdencias do projeto
 `pip install --upgrade pip setuptools wheel poetry`
