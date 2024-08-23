@@ -6,6 +6,10 @@ from src.v1.model import Part
 class PartsRepository:
     def __init__(self):
         self.collection = sqlite3.connect('parts.db')
+        self.collection.execute(
+            'CREATE TABLE IF NOT EXISTS parts (id INTEGER PRIMARY KEY, name TEXT, quantity INTEGER, description TEXT,'
+            ' created_at DATETIME, updated_at DATETIME)'
+        )
 
     def _execute(self, query: str, parameters: tuple = ()) -> list:
         return self.collection.cursor().execute(query, parameters)
