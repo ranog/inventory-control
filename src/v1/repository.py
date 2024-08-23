@@ -6,15 +6,11 @@ from src.v1.model import Part
 class PartsRepository:
     def __init__(self):
         self.collection = sqlite3.connect('parts.db')
-        self.collection.execute(
-            'CREATE TABLE IF NOT EXISTS parts (id INTEGER PRIMARY KEY, name TEXT, quantity INTEGER, description TEXT,'
-            ' created_at DATETIME, updated_at DATETIME)'
-        )
 
     def _execute(self, query: str, parameters: tuple = ()) -> list:
         return self.collection.cursor().execute(query, parameters)
 
-    def _set_date(self, part: Part) -> Part:
+    def _set_date(self, part: Part) -> None:
         part.created_at = str(datetime.now(timezone.utc))
         part.updated_at = part.created_at
 

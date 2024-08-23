@@ -10,6 +10,9 @@ ENV PATH="/opt/venv/bin:$PATH"
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+COPY ./create_db.py /create_db.py
+RUN python /create_db.py
+
 FROM python:3.11-slim
 
 # Allow statements and log messages to immediately appear in the Cloud Run logs
@@ -22,3 +25,4 @@ CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8080"]
 
 COPY --from=builder /opt/venv /opt/venv
 COPY ./src ./src
+COPY --from=builder /parts.db /app/parts.db
