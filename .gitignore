@@ -165,4 +165,8 @@ cython_debug/
 # ruff
 .ruff_cache/
 
+# db
+parts.db
+
+# JetBrains
 .idea/

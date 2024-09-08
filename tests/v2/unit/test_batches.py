@@ -6,7 +6,7 @@ from src.v2.allocation.domain.model import Batch, OrderLine
 def make_batch_and_line(sku, batch_qty, line_qty):
     return (
         Batch(ref='batch-001', sku=sku, qty=batch_qty, eta=date.today()),
-        OrderLine(orderid='order-123', sku=sku, qty=line_qty),
+        OrderLine(order_id='order-123', sku=sku, qty=line_qty),
     )
 
 
@@ -19,15 +19,15 @@ def test_allocating_to_a_batch_reduces_the_available_quantity():
 
 
 def test_can_allocate_if_available_greater_than_required():
-    batch, line = make_batch_and_line(sku='STEPPER-MOTOR', batch_qty=20, line_qty=2)
+    large_batch, small_line = make_batch_and_line(sku='STEPPER-MOTOR', batch_qty=20, line_qty=2)
 
-    assert batch.can_allocate(line)
+    assert large_batch.can_allocate(small_line)
 
 
 def test_cannot_allocate_if_available_smaller_than_required():
-    batch, line = make_batch_and_line(sku='STEPPER-MOTOR', batch_qty=2, line_qty=20)
+    small_batch, large_line = make_batch_and_line(sku='STEPPER-MOTOR', batch_qty=2, line_qty=20)
 
-    assert not batch.can_allocate(line)
+    assert not small_batch.can_allocate(large_line)
 
 
 def test_can_allocate_if_available_equal_to_required():
@@ -38,15 +38,15 @@ def test_can_allocate_if_available_equal_to_required():
 
 def test_cannot_allocate_if_skus_do_not_match():
     batch = Batch(ref='batch-001', sku='STEPPER-MOTOR', qty=20, eta=None)
-    line = OrderLine(orderid='order-ref', sku='MICRO-SERVO-9G-SG90', qty=2)
+    different_sku_line = OrderLine(order_id='order-ref', sku='MICRO-SERVO-9G-SG90', qty=2)
 
-    assert not batch.can_allocate(line)
+    assert batch.can_allocate(different_sku_line) is False
 
 
 def test_can_only_deallocate_allocated_lines():
-    batch, line = make_batch_and_line(sku='STEPPER-MOTOR', batch_qty=20, line_qty=2)
+    batch, unallocated_line = make_batch_and_line(sku='STEPPER-MOTOR', batch_qty=20, line_qty=2)
 
-    batch.deallocate(line)
+    batch.deallocate(unallocated_line)
 
     assert batch.available_quantity == 20
 

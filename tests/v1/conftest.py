@@ -1,7 +1,7 @@
 from httpx import AsyncClient
 import pytest
 
-from main import app
+from src.main import app
 from src.v1.model import Part
 from src.v1.repository import PartsRepository
 
