@@ -1,4 +1,4 @@
-# Robotic parts inventory
+# Inventory control
 CRUD básico para cadastro de peças.
 
 ## Instalar as dependências do projeto

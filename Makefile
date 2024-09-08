@@ -48,18 +48,18 @@ run: init
 
 build-container:
 	@docker build \
-		--tag ranog:robotic-parts-inventory \
+		--tag ranog:inventory-control \
 		--build-arg GIT_HASH=$(shell git rev-parse HEAD) \
 		-f Dockerfile \
 		.
 
 run-container: poetry-export build-container
 	@docker run --rm -it \
-		--name ranog_robotic-parts-inventory \
+		--name ranog_inventory-control \
 		--env-file .env \
 		--env PORT=8080 \
 		--publish 8080:8080 \
-		ranog:robotic-parts-inventory
+		ranog:inventory-control
 
 test-all: init
 	@poetry run env $(shell grep -v ^\# .env | xargs) pytest

@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "robotic-parts-inventory"
+name = "inventory-control"
 version = "0.0.1"
-description = "Robotic parts inventory"
+description = "Inventory control system"
 authors = [
   "João Paulo Ramos Nogueira <jprnogueira@yahoo.com.br>",
 ]
