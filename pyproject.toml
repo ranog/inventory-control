@@ -8,7 +8,7 @@ authors = [
 
 [tool.poetry.dependencies]
 python = "~3.11"
-fastapi = "^0.85.0"
+fastapi = "^0.114"
 uvicorn = "^0.18.3"
 pydantic = {extras = ["email"], version = "^1.10.8"}
 poetry-plugin-export = "^1.6.0"
