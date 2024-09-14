@@ -3,11 +3,19 @@ from datetime import date
 from typing import Optional
 
 
-@dataclass(frozen=True)
+@dataclass
 class OrderLine:
     order_id: str
     sku: str  # stock-keeping unit
     qty: int
+
+    def __eq__(self, other):
+        if not isinstance(other, OrderLine):
+            return False
+        return (self.order_id, self.sku, self.qty) == (other.order_id, other.sku, other.qty)
+
+    def __hash__(self):
+        return hash((self.order_id, self.sku, self.qty))
 
 
 class Batch:
