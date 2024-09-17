@@ -13,6 +13,7 @@ uvicorn = "^0.18.3"
 pydantic = {extras = ["email"], version = "^1.10.8"}
 poetry-plugin-export = "^1.6.0"
 sqlalchemy = "^2.0.34"
+psycopg2-binary = "^2.9.9"
 
 
 [tool.poetry.group.dev.dependencies]
