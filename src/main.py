@@ -1,6 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 from src.v1.service import (
     delete_part_record,
@@ -10,6 +12,9 @@ from src.v1.service import (
     update_part,
 )
 from src.v1.model import Part
+from src.v2.allocation import config
+from src.v2.allocation.adapters import repository
+from src.v2.allocation.domain import model
 
 app = FastAPI()
 
@@ -56,3 +61,28 @@ async def delete_part(part_number: int):
     if part_data:
         return await delete_part_record(part_number)
     return JSONResponse(status_code=404, content={'detail': 'Part number not found'})
+
+
+get_session = sessionmaker(bind=create_engine(config.get_postgres_uri()))
+
+
+def is_valid_sku(sku, batches):
+    return sku in {b.sku for b in batches}
+
+
+@app.post('/v2/allocate', status_code=201)
+async def allocate_endpoint(request: Request):
+    session = get_session()
+    batches = repository.SqlAlchemyRepository(session).list()
+    body = await request.json()
+    line = model.OrderLine(body['order_id'], body['sku'], body['qty'])
+    if not is_valid_sku(line.sku, batches):
+        return JSONResponse(status_code=400, content={'message': f'Invalid sku {line.sku}'})
+
+    try:
+        batch_ref = model.allocate(line, batches)
+    except model.OutOfStock as e:
+        return JSONResponse(status_code=400, content={'message': str(e)})
+
+    session.commit()
+    return {'batch_ref': batch_ref}
