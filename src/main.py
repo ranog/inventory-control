@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+
 from src.v1.service import (
     delete_part_record,
     list_parts,
@@ -15,6 +16,7 @@ from src.v1.model import Part
 from src.v2.allocation import config
 from src.v2.allocation.adapters import repository
 from src.v2.allocation.domain import model
+from src.v2.allocation.service_layer import services
 
 app = FastAPI()
 
@@ -73,16 +75,11 @@ def is_valid_sku(sku, batches):
 @app.post('/v2/allocate', status_code=201)
 async def allocate_endpoint(request: Request):
     session = get_session()
-    batches = repository.SqlAlchemyRepository(session).list()
+    repo = repository.SqlAlchemyRepository(session)
     body = await request.json()
     line = model.OrderLine(body['order_id'], body['sku'], body['qty'])
-    if not is_valid_sku(line.sku, batches):
-        return JSONResponse(status_code=400, content={'message': f'Invalid sku {line.sku}'})
-
     try:
-        batch_ref = model.allocate(line, batches)
-    except model.OutOfStock as e:
+        batch_ref = services.allocate(line=line, repo=repo, session=session)
+    except (model.OutOfStock, services.InvalidSku) as e:
         return JSONResponse(status_code=400, content={'message': str(e)})
-
-    session.commit()
     return {'batch_ref': batch_ref}
