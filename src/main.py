@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
@@ -13,12 +15,53 @@ from src.v1.service import (
     update_part,
 )
 from src.v1.model import Part
-from src.v2.allocation import config
-from src.v2.allocation.adapters import repository
+from src import config
+from src.v2.allocation.adapters import repository, orm
 from src.v2.allocation.domain import model
 from src.v2.allocation.service_layer import services
 
+
+orm.start_mappers()
+get_session = sessionmaker(bind=create_engine(config.get_postgres_uri()))
+
 app = FastAPI()
+
+
+@app.post('/v2/allocations', status_code=201)
+async def allocations_endpoint(request: Request):
+    session = get_session()
+    repo = repository.SqlAlchemyRepository(session)
+    body = await request.json()
+    try:
+        batch_ref = services.allocate(
+            order_id=body['order_id'],
+            sku=body['sku'],
+            qty=body['qty'],
+            repo=repo,
+            session=session,
+        )
+    except (model.OutOfStock, services.InvalidSku) as e:
+        return JSONResponse(status_code=400, content={'message': str(e)})
+    return {'batch_ref': batch_ref}
+
+
+@app.post('/v2/batches', status_code=201)
+async def batches_endpoint(request: Request):
+    session = get_session()
+    repo = repository.SqlAlchemyRepository(session)
+    body = await request.json()
+    eta = body['eta']
+    if eta is not None:
+        eta = datetime.fromisoformat(eta).date()
+    services.add_batch(
+        ref=body['ref'],
+        sku=body['sku'],
+        qty=body['qty'],
+        eta=eta,
+        repo=repo,
+        session=session,
+    )
+    return {'message': 'OK'}
 
 
 @app.exception_handler(RequestValidationError)
@@ -63,23 +106,3 @@ async def delete_part(part_number: int):
     if part_data:
         return await delete_part_record(part_number)
     return JSONResponse(status_code=404, content={'detail': 'Part number not found'})
-
-
-get_session = sessionmaker(bind=create_engine(config.get_postgres_uri()))
-
-
-def is_valid_sku(sku, batches):
-    return sku in {b.sku for b in batches}
-
-
-@app.post('/v2/allocate', status_code=201)
-async def allocate_endpoint(request: Request):
-    session = get_session()
-    repo = repository.SqlAlchemyRepository(session)
-    body = await request.json()
-    line = model.OrderLine(body['order_id'], body['sku'], body['qty'])
-    try:
-        batch_ref = services.allocate(line=line, repo=repo, session=session)
-    except (model.OutOfStock, services.InvalidSku) as e:
-        return JSONResponse(status_code=400, content={'message': str(e)})
-    return {'batch_ref': batch_ref}
