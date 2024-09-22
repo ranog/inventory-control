@@ -1,6 +1,7 @@
-from sqlalchemy import MetaData, Column, Integer, Table, String, Date, ForeignKey
+from sqlalchemy import MetaData, Column, Integer, Table, String, Date, ForeignKey, create_engine
 from sqlalchemy.orm import registry, relationship
 
+from src import config
 from src.v2.allocation.domain import model
 
 metadata = MetaData()
@@ -47,3 +48,8 @@ def start_mappers():
             ),
         },
     )
+
+
+def create_tables():
+    engine = create_engine(config.get_postgres_uri(), pool_pre_ping=True)
+    metadata.create_all(engine)
