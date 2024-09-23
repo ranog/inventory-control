@@ -20,13 +20,16 @@ def in_memory_db():
 
 
 @pytest.fixture
-def session(in_memory_db):
+def session_factory(in_memory_db):
     clear_mappers()
     start_mappers()
-    session = sessionmaker(bind=in_memory_db)()
-    yield session
-    session.close()
+    yield sessionmaker(bind=in_memory_db)
     clear_mappers()
+
+
+@pytest.fixture
+def session(session_factory):
+    return session_factory()
 
 
 def wait_for_postgres_to_come_up(engine):

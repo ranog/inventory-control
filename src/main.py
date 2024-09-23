@@ -3,9 +3,6 @@ from datetime import datetime
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
 
 from src.v1.service import (
     delete_part_record,
@@ -15,30 +12,24 @@ from src.v1.service import (
     update_part,
 )
 from src.v1.model import Part
-from src import config
-from src.v2.allocation.adapters import repository, orm
+from src.v2.allocation.adapters import orm
 from src.v2.allocation.domain import model
-from src.v2.allocation.service_layer import services
+from src.v2.allocation.service_layer import services, unit_of_work
 
-
-orm.start_mappers()
-get_session = sessionmaker(bind=create_engine(config.get_postgres_uri()))
 
 app = FastAPI()
+orm.start_mappers()
 
 
 @app.post('/v2/allocations', status_code=201)
 async def allocations_endpoint(request: Request):
-    session = get_session()
-    repo = repository.SqlAlchemyRepository(session)
     body = await request.json()
     try:
         batch_ref = services.allocate(
             order_id=body['order_id'],
             sku=body['sku'],
             qty=body['qty'],
-            repo=repo,
-            session=session,
+            uow=unit_of_work.SqlAlchemyUnitOfWork(),
         )
     except (model.OutOfStock, services.InvalidSku) as e:
         return JSONResponse(status_code=400, content={'message': str(e)})
@@ -47,8 +38,6 @@ async def allocations_endpoint(request: Request):
 
 @app.post('/v2/batches', status_code=201)
 async def batches_endpoint(request: Request):
-    session = get_session()
-    repo = repository.SqlAlchemyRepository(session)
     body = await request.json()
     eta = body['eta']
     if eta is not None:
@@ -58,8 +47,7 @@ async def batches_endpoint(request: Request):
         sku=body['sku'],
         qty=body['qty'],
         eta=eta,
-        repo=repo,
-        session=session,
+        uow=unit_of_work.SqlAlchemyUnitOfWork(),
     )
     return {'message': 'OK'}
 
