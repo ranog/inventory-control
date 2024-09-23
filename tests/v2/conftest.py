@@ -8,7 +8,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, clear_mappers
 
 from src.main import app
-from src import config
+from src.v2.allocation import config
 from src.v2.allocation.adapters.orm import metadata, start_mappers
 
 

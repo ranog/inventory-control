@@ -3,7 +3,7 @@ import abc
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from src import config
+from src.v2.allocation import config
 from src.v2.allocation.adapters import repository
 
 

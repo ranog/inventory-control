@@ -3,7 +3,7 @@ from datetime import date
 
 import pytest
 
-from src import config
+from src.v2.allocation import config
 
 
 def random_suffix():
