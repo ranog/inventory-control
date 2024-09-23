@@ -10,10 +10,13 @@ services:
     environment:
       - DB_HOST=postgres
       - DB_PASSWORD=abc123
+      - API_HOST=app
+      - PYTHONDONTWRITEBYTECODE=1
     volumes:
-      - ./:/code
+      - ./src:/src
+      - ./tests:/tests
     ports:
-      - "8080:8080"
+      - "8000:80"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
       interval: 10s
@@ -31,4 +34,3 @@ services:
       test: ["CMD-SHELL", "pg_isready -U allocation"]
       interval: 10s
       retries: 5
-

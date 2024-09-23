@@ -18,7 +18,7 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 ENV PATH="/opt/venv/bin:$PATH"
 
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "80"]
 
 COPY --from=builder /opt/venv /opt/venv
 COPY ./src ./src
