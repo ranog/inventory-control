@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from datetime import datetime
 
 from fastapi import FastAPI, Request
@@ -17,8 +18,14 @@ from src.v2.allocation.domain import model
 from src.v2.allocation.service_layer import services, unit_of_work
 
 
-app = FastAPI()
-orm.start_mappers()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    orm.start_mappers()
+    orm.create_tables()
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 
 @app.post('/v2/allocations', status_code=201)

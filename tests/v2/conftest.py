@@ -1,13 +1,13 @@
 import time
 from pathlib import Path
-from fastapi.testclient import TestClient
+
+import requests
 from requests.exceptions import ConnectionError
 from sqlalchemy.exc import OperationalError
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, clear_mappers
 
-from src.main import app
 from src.v2.allocation import config
 from src.v2.allocation.adapters.orm import metadata, start_mappers
 
@@ -50,26 +50,20 @@ def postgres_db():
     return engine
 
 
-def wait_for_webapp_to_come_up(client):
+def wait_for_webapp_to_come_up():
     deadline = time.time() + 10
     url = config.get_api_url()
     while time.time() < deadline:
         try:
-            return client.get(url)
+            return requests.get(url)
         except ConnectionError:
             time.sleep(0.5)
     pytest.fail('API never came up')
 
 
 @pytest.fixture
-def restart_api(test_client):
+def restart_api():
     app_file_path = Path(__file__).parent.parent.parent / 'src' / 'main.py'
     app_file_path.touch()
     time.sleep(0.5)
-    wait_for_webapp_to_come_up(test_client)
-
-
-@pytest.fixture
-def test_client():
-    with TestClient(app) as test_client:
-        yield test_client
+    wait_for_webapp_to_come_up()

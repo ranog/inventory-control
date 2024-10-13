@@ -53,3 +53,5 @@ def start_mappers():
 def create_tables():
     engine = create_engine(config.get_postgres_uri(), pool_pre_ping=True)
     metadata.create_all(engine)
+    yield
+    engine.dispose()

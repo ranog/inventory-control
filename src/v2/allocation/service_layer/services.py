@@ -1,7 +1,6 @@
 from datetime import date
 from typing import Optional
 
-from src.v2.allocation.adapters import orm
 from src.v2.allocation.domain import model
 from src.v2.allocation.service_layer import unit_of_work
 
@@ -25,8 +24,6 @@ def allocate(order_id: str, sku: str, qty: int, uow: unit_of_work.AbstractUnitOf
 
 
 def add_batch(ref: str, sku: str, qty: int, eta: Optional[date], uow: unit_of_work.AbstractUnitOfWork) -> None:
-    # TODO: isso não deveria ser feito aqui
-    orm.create_tables()
     with uow:
         uow.batches.add(model.Batch(ref=ref, sku=sku, qty=qty, eta=eta))
         uow.commit()
