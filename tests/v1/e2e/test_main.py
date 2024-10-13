@@ -27,10 +27,14 @@ async def test_it_should_return_400_when_registering_part_with_invalid_payload(
     part_payload.pop('description')
     expected_error = [
         {
+            'input': {
+                'name': 'Stepper motor',
+                'quantity': 100,
+            },
             'loc': ['body', 'description'],
-            'msg': 'field required',
-            'type': 'value_error.missing',
-        }
+            'msg': 'Field required',
+            'type': 'missing',
+        },
     ]
 
     response = await async_http_client.post('/v1/parts/', json=part_payload)
