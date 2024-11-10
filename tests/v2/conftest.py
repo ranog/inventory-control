@@ -1,4 +1,5 @@
 import time
+import uuid
 from pathlib import Path
 
 import requests
@@ -10,6 +11,22 @@ from sqlalchemy.orm import sessionmaker, clear_mappers
 
 from src.v2.allocation import config
 from src.v2.allocation.adapters.orm import metadata, start_mappers
+
+
+def random_suffix():
+    return uuid.uuid4().hex[:6]
+
+
+def random_sku(name=''):
+    return f'sku-{name}-{random_suffix()}'
+
+
+def random_batch_ref(name=''):
+    return f'batch-{name}-{random_suffix()}'
+
+
+def random_order_id(name=''):
+    return f'order-{name}-{random_suffix()}'
 
 
 @pytest.fixture
@@ -48,6 +65,14 @@ def postgres_db():
     wait_for_postgres_to_come_up(engine)
     metadata.create_all(engine)
     return engine
+
+
+@pytest.fixture
+def postgres_session_factory(postgres_db):
+    clear_mappers()
+    start_mappers()
+    yield sessionmaker(bind=postgres_db)
+    clear_mappers()
 
 
 def wait_for_webapp_to_come_up():

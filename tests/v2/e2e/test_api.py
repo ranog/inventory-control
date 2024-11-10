@@ -1,26 +1,10 @@
-import uuid
 from datetime import date
 
 import pytest
 import requests
 
 from src.v2.allocation import config
-
-
-def random_suffix():
-    return uuid.uuid4().hex[:6]
-
-
-def random_sku(name=''):
-    return f'sku-{name}-{random_suffix()}'
-
-
-def random_batch_ref(name=''):
-    return f'batch-{name}-{random_suffix()}'
-
-
-def random_order_id(name=''):
-    return f'order-{name}-{random_suffix()}'
+from tests.v2.conftest import random_sku, random_batch_ref, random_order_id
 
 
 def post_to_add_batch(ref: str, sku: str, qty: int, eta: str = None):
