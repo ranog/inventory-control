@@ -14,7 +14,6 @@ from src.v1.service import (
 )
 from src.v1.model import Part
 from src.v2.allocation.adapters import orm
-from src.v2.allocation.domain import model
 from src.v2.allocation.service_layer import services, unit_of_work
 
 
@@ -38,7 +37,7 @@ async def allocations_endpoint(request: Request):
             qty=body['qty'],
             uow=unit_of_work.SqlAlchemyUnitOfWork(),
         )
-    except (model.OutOfStock, services.InvalidSku) as e:
+    except services.InvalidSku as e:
         return JSONResponse(status_code=400, content={'message': str(e)})
     return {'batch_ref': batch_ref}
 

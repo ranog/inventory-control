@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 
 import pytest
 import requests
@@ -23,7 +23,7 @@ def test_happy_path_returns_201_and_allocated_batch():
     later_batch = random_batch_ref('2')
     other_batch = random_batch_ref('3')
 
-    post_to_add_batch(ref=early_batch, sku=sku, qty=100)
+    post_to_add_batch(ref=early_batch, sku=sku, qty=100, eta=f'{date.today() - timedelta(days=1)}')
     post_to_add_batch(ref=later_batch, sku=sku, qty=100, eta=f'{date.today()}')
     post_to_add_batch(ref=other_batch, sku=other_sku, qty=100)
 

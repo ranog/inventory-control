@@ -1,13 +1,23 @@
 import pytest
-from datetime import date, timedelta
 
 from src.v2.allocation.adapters import repository
-from src.v2.allocation.domain.model import Batch, Product
-from src.v2.allocation.service_layer import services, unit_of_work
+from src.v2.allocation.service_layer import unit_of_work, services
 
-today = date.today()
-tomorrow = today + timedelta(days=1)
-later = tomorrow + timedelta(days=10)
+
+class FakeRepository(repository.AbstractRepository):
+    def __init__(self, products):
+        self._products = set(products)
+        self.seen = set()
+
+    def add(self, product):
+        self._products.add(product)
+        self.seen.add(product)
+
+    def get(self, sku):
+        product = next((p for p in self._products if p.sku == sku), None)
+        if product:
+            self.seen.add(product)
+        return product
 
 
 class FakeUnitOfWork(unit_of_work.AbstractUnitOfWork):
@@ -15,22 +25,11 @@ class FakeUnitOfWork(unit_of_work.AbstractUnitOfWork):
         self.products = FakeRepository([])
         self.committed = False
 
-    def commit(self):
+    def _commit(self):
         self.committed = True
 
     def rollback(self):
         pass
-
-
-class FakeRepository(repository.AbstractRepository):
-    def __init__(self, products: list):
-        self._products = set(products)
-
-    def add(self, product: Product):
-        self._products.add(product)
-
-    def get(self, sku: str) -> Batch:
-        return next((p for p in self._products if p.sku == sku), None)
 
 
 def test_add_batch_for_new_product():

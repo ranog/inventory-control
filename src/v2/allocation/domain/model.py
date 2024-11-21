@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from datetime import date
 from typing import Optional
 
+from src.v2.allocation.domain import events
+
 
 @dataclass
 class OrderLine:
@@ -25,6 +27,9 @@ class Batch:
         self.eta = eta
         self._purchased_quantity = qty
         self._allocations = set()
+
+    def __repr__(self):
+        return f'<Batch {self.reference}>'
 
     def __eq__(self, other):
         if not isinstance(other, Batch):
@@ -61,15 +66,12 @@ class Batch:
         return self.sku == line.sku and self.available_quantity >= line.qty
 
 
-class OutOfStock(Exception):
-    pass
-
-
 class Product:
     def __init__(self, sku: str, batches: list[Batch], version_number: int = 0):
         self.sku = sku
         self.batches = batches
         self.version_number = version_number
+        self.events = []
 
     def allocate(self, line: OrderLine) -> str:
         try:
@@ -78,4 +80,4 @@ class Product:
             self.version_number += 1
             return batch.reference
         except StopIteration:
-            raise OutOfStock(f'Out of stock for sku {line.sku}')
+            self.events.append(events.OutOfStock(line.sku))

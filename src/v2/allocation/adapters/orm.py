@@ -1,4 +1,4 @@
-from sqlalchemy import MetaData, Column, Integer, Table, String, Date, ForeignKey, create_engine
+from sqlalchemy import MetaData, Column, Integer, Table, String, Date, ForeignKey, create_engine, event
 from sqlalchemy.orm import registry, relationship
 
 from src.v2.allocation import config
@@ -67,3 +67,8 @@ def create_tables():
     metadata.create_all(engine)
     yield
     engine.dispose()
+
+
+@event.listens_for(model.Product, 'load')
+def receive_load(product, _):
+    product.events = []
